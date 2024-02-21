@@ -1,0 +1,104 @@
+#2D-In2Se3
+variable        TEMP            equal 300.000
+variable        PRES            equal 1.01325
+variable        TAU_T           equal 0.10000
+variable        TAU_P           equal 0.50000
+
+units           metal
+boundary        p p p
+atom_style      atomic
+
+neighbor        1.0 bin
+
+box          tilt large
+read_data     /storage/liushiLab/bailiyi/in2se3-MD/polre-DW/zwj-test/dw1/201604/pre_nvt/data.300K1000266 
+
+change_box   all triclinic
+mass            1 114.818000
+mass            2 78.960000
+pair_style      deepmd /home/liushiLab/bailiyi/In2Se3dpModel/frozen_model.pb
+pair_coeff      
+
+
+group   in  type 1
+group   se  type 2
+
+velocity        all create ${TEMP} 45892
+#velocity        all create ${TEMP} 4558296
+
+variable In1_h equal 800
+variable In2_h equal ${In1_h}*2
+variable Se1_h equal ${In1_h}*3  # mid se
+variable Se2_h equal ${In1_h}*4  # top
+variable Se3_h equal ${In1_h}*5  # bottom 
+
+variable In1_l equal 1
+variable In2_l equal ${In1_h}+1
+variable Se1_l equal ${In2_h}+1
+variable Se2_l equal ${Se1_h}+1
+variable Se3_l equal ${Se2_h}+1
+
+
+group ln1all id ${In1_l}:${In1_h}
+group ln2all id ${In2_l}:${In2_h}
+group Se1all id ${Se1_l}:${Se1_h}
+group Se2all id ${Se2_l}:${Se2_h}
+group Se3all id ${Se3_l}:${Se3_h}
+
+region field block INF INF INF INF INF INF 
+group fieldatoms region  field
+
+group ln1 intersect ln1all fieldatoms
+group ln2 intersect ln2all fieldatoms
+group Se1 intersect Se1all fieldatoms
+group Se2 intersect Se2all fieldatoms
+group Se3 intersect Se3all fieldatoms
+
+variable VALUEX  equal 0.0
+variable VALUEY  equal 0.0
+variable VALUEZ  equal 0.2
+
+variable ln1fx equal 4.00*v_VALUEX
+variable ln2fx equal 2.73*v_VALUEX
+variable Se2fx equal -2.51*v_VALUEX
+variable Se1fx equal -1.74*v_VALUEX
+variable Se3fx equal -2.47*v_VALUEX
+
+variable ln1fy equal 4.06*v_VALUEY
+variable ln2fy equal 2.78*v_VALUEY
+variable Se2fy equal -2.57*v_VALUEY
+variable Se1fy equal -1.73*v_VALUEY
+variable Se3fy equal -2.54*v_VALUEY
+
+variable ln1fz equal 0.459*v_VALUEZ
+variable ln2fz equal 0.523*v_VALUEZ
+variable Se2fz equal -0.245*v_VALUEZ
+variable Se1fz equal -0.454*v_VALUEZ
+variable Se3fz equal -0.283*v_VALUEZ
+
+
+fix             fln1  ln1 addforce v_ln1fx v_ln1fy v_ln1fz
+fix             fln2  ln2 addforce v_ln2fx v_ln2fy v_ln2fz 
+fix             fSe1  Se1 addforce v_Se1fx v_Se1fy v_Se1fz
+fix             fSe2  Se2 addforce v_Se2fx v_Se2fy v_Se2fz
+fix             fSe3  Se3 addforce v_Se3fx v_Se3fy v_Se3fz
+
+
+thermo          100
+thermo_style    custom step pe ke etotal temp press vol cella cellb cellc cellalpha cellbeta cellgamma
+
+#fix             1 all npt temp ${TEMP} ${TEMP} ${TAU_T} x ${PRES} ${PRES} ${TAU_P} y ${PRES} ${PRES} ${TAU_P} xy ${PRES} ${PRES} ${TAU_P}
+fix             1 all nvt temp ${TEMP} ${TEMP} ${TAU_T}
+
+#dump            1 all custom 1000 dump_efield${VALUEZ}.lammpstrj id type x y z 
+#dump_modify 1 sort id
+
+dump            2 all custom 100 ele_efield${VALUEZ}.lammpstrj id element x y z
+dump_modify 2 sort 1 element In Se
+
+
+write_restart   In2Se3.restart
+
+timestep       0.001000
+run            1000000
+write_data   data.${VALUEZ}f*
