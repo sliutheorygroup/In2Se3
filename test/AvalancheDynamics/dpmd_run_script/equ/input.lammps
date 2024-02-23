@@ -1,0 +1,47 @@
+#2D-In2Se3
+variable        TEMP            equal 300.000
+variable        PRES            equal 1.01325
+variable        TAU_T           equal 0.10000
+variable        TAU_P           equal 0.50000
+
+units           metal
+boundary        p p p
+atom_style      atomic
+
+neighbor        1.0 bin
+
+box          tilt large
+read_data     ./temp_conf.lmp
+change_box   all triclinic
+mass            1 114.818000
+mass            2 78.960000
+pair_style      deepmd /home/liushiLab/bailiyi/In2Se3dpModel/frozen_model.pb
+pair_coeff      
+
+
+group   in  type 1
+group   se  type 2
+
+timestep        0.001000
+
+thermo          1000
+thermo_style    custom step pe ke etotal temp press vol cella cellb cellc cellalpha cellbeta cellgamma 
+
+velocity        all create ${TEMP} 46956
+fix             1 all nvt temp ${TEMP} ${TEMP} ${TAU_T} 
+dump            1 all custom 1000 nvt_pre.lammpstrj id type x y z fx fy fz
+dump_modify 1 sort id
+
+dump            2 all custom 1000 ele_nvt.lammpstrj id element x y z
+dump_modify 2 sort 1 element In Se
+
+
+minimize 1e-10 1e-10 1000000 1000000
+write_data data.relax*
+
+
+
+write_restart   In2Se3.restart
+run            1000000
+write_data   data.${TEMP}K*
+
