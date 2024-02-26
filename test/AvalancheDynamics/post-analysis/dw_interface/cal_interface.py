@@ -15,9 +15,6 @@ m_se =int(4000/5*2)
 filename =sys.argv[1]
 inputfile  = filename
 
-#inputfile  = sys.argv[1]
-#filename = open(inputfile,'r')
-
 def get_cell_size(filename):
     f = open(filename, 'r')
     # skip first two lines
@@ -89,7 +86,7 @@ if __name__=="__main__":
     Se_pcd = o3d.geometry.PointCloud()
     Se_pcd.points = o3d.utility.Vector3dVector(In_extrapolated_data) # From numpy to Open3D
 
-    # create kd-tree,建立KD树索引
+    # create kd-tree
     pcd_tree = o3d.geometry.KDTreeFlann(In_pcd)
 
     Se_z = Se_data[:, 2]
@@ -130,52 +127,8 @@ if __name__=="__main__":
         y_mean = np.mean(In_neighbour[:, 1])
         diff_y = y_mean -Se_data[index, 1]
 
-        # if abs(diff_x) < 0.001:
-        #     diff_x = 0.0
-        # if abs(diff_y) < 0.001:
-        #     diff_y = 0.0
-        # if abs(diff_z) < 0.001:
-        #     diff_z = 0.0
 
         print("Se", Se_data[index, 0], Se_data[index, 1], Se_data[index, 2], diff_x, diff_y, diff_z, file=fd)
         print("Se", Se_data[index, 0], Se_data[index, 1], Se_data[index, 2], diff_x, "0.0", "0.0", file=fdx)
         print("Se", Se_data[index, 0], Se_data[index, 1], Se_data[index, 2], "0.0", diff_y, "0.0", file=fdy)
         print("Se", Se_data[index, 0], Se_data[index, 1], Se_data[index, 2], "0.0", "0.0", diff_z, file=fdz)
-
-    # for index in middle_Se_index[0]:
-    #     # [k, idx, _] = pcd_tree.search_radius_vector_3d(Se_pcd.points[index], 4)
-    #     [k, idx, _] = pcd_tree.search_radius_vector_3d(Se_data[index, :], 3.9)  # search Se neighboring In atoms
-    #     In_neighbour = In_extrapolated_data[idx]
-    #     upper_In_index = np.where(In_neighbour[:, 2] > Se_data[index, 2])
-    #     lower_In_index = np.where(In_neighbour[:, 2] < Se_data[index, 2])
-    #     upper_mean = np.mean(In_neighbour[upper_In_index, 2])
-    #     lower_mean = np.mean(In_neighbour[lower_In_index, 2])
-    #     upper_lower_mean = (upper_mean+lower_mean) / 2
-    #     diff_z = Se_data[index, 2] - upper_lower_mean
-    #     print("Se", Se_data[index, 0], Se_data[index, 1], Se_data[index, 2], "0.0", "0.0", diff_z, file=fdz)
-    #     #print(upper_mean, lower_mean, upper_lower_mean, Se_data[index, 0], Se_data[index, 1], diff_z, file=fdz)
-    #
-    #     #print (In_neighbour)
-    #     len_neigh = len(In_neighbour[:,0])
-    #     #print(len_neigh)
-    #     #print("Se", index,len_neigh)
-    #     if len_neigh < 6:
-    #         print("Se", index,len_neigh)
-    #         print(idx)
-
-    #
-    # for index in middle_Se_index[0]:
-    #     [k, idx, _] = pcd_tree.search_radius_vector_3d(Se_data[index, :], 3.9)
-    #     In_neighbour = In_extrapolated_data[idx]
-    #     x_mean = np.mean(In_neighbour[:, 1])
-    #     diff_x = Se_data[index, 1] - x_mean
-    #     print("Se", Se_data[index, 0], Se_data[index, 1], Se_data[index, 2], diff_x, "0.0", "0.0", file=fdx)
-    #     #print(x_mean, Se_data[index, 0], Se_data[index, 1], diff_x, file=fdx)
-    #
-    # for index in middle_Se_index[0]:
-    #     [k, idx, _] = pcd_tree.search_radius_vector_3d(Se_data[index, :], 3.9)
-    #     In_neighbour = In_extrapolated_data[idx]
-    #     y_mean = np.mean(In_neighbour[:, 1])
-    #     diff_y = Se_data[index, 1] - y_mean
-    #     print("Se", Se_data[index, 0], Se_data[index, 1], Se_data[index, 2], "0.0", diff_y, "0.0", file=fdy)
-    #     #print(y_mean, Se_data[index, 0], Se_data[index, 2], diff_y, file=fdy)

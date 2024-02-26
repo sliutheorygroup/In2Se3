@@ -42,7 +42,7 @@ def get_cell_size(filename):
 
 def find_max_y_within_range(arr, interval):
     x_min = 0
-    x_max = np.max(arr[:, 0])  # 获取x的最大值
+    x_max = np.max(arr[:, 0])  
 
     max_y_values = []
 
@@ -120,7 +120,7 @@ if __name__=="__main__":
         Se_pcd = o3d.geometry.PointCloud()
         Se_pcd.points = o3d.utility.Vector3dVector(In_extrapolated_data) # From numpy to Open3D
 
-        # create kd-tree,建立KD树索引
+        # create kd-tree
         pcd_tree = o3d.geometry.KDTreeFlann(In_pcd)
 
         Se_z = Se_data[:, 2]
@@ -172,23 +172,3 @@ if __name__=="__main__":
         y_err = np.append(y_err,std_y)
         np.savetxt('position_value.out', y_all)
         np.savetxt('position_err.out', y_err)
-
-#        if y_true >30.0 and y_true <90.0:
-#            y_out = np.append(y_out, y_true)
-#                    # print(y_true)
-#            np.savetxt('a_ySelect.out', y_out)
-#####raw plot
-#xh = consider_dump//10
-#xinter = interval_dump//10
-#xinit = xinter
-#print("x length: ", len(range(xinit,xh,xinter)))
-#print("y length: ", len(y_all))
-#plt.errorbar(range(xinit,xh,xinter),y_all,yerr=y_err,elinewidth=2,alpha=1,ecolor='black',capsize=5,capthick=1,linestyle="none",label='300K 2V/nm')
-#plt.scatter(range(xinit,xh,xinter),y_all)
-#plt.xlabel("Time (ps)")
-#plt.ylabel("Domain Wall Position")
-#plt.ylim(-5, 115)
-#plt.xlim(-5, xh+1)
-
-#plt.legend(loc='upper left')
-#plt.show()
