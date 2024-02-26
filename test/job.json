@@ -6,6 +6,7 @@
     "backward_files": [],
     "project_id": 16373,
     "platform": "ali",
-    "machine_type": "c12_m92_1 * NVIDIA V100",
+    "_machine_type": "c12_m92_1 * NVIDIA V100",
+    "machine_type": "c8_m31_1 * NVIDIA T4",
     "image_address": "registry.dp.tech/dptech/prod-463/deepmd-kit:1.1.4-cuda10.1"
 }
