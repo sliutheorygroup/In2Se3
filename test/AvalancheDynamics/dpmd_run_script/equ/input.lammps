@@ -11,11 +11,11 @@ atom_style      atomic
 neighbor        1.0 bin
 
 box          tilt large
-read_data     ./temp_conf.lmp
+read_data     conf.lmp
 change_box   all triclinic
 mass            1 114.818000
 mass            2 78.960000
-pair_style      deepmd /home/liushiLab/bailiyi/In2Se3dpModel/frozen_model.pb
+pair_style      deepmd ./frozen_model.pb
 pair_coeff      
 
 
